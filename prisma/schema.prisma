@@ -1,0 +1,285 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ConversationType {
+  DM
+  GROUP
+}
+
+enum ParticipantRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
+}
+
+model User {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name         String?
+  email        String  @unique
+  image        String?
+  // store hashed password (NextAuth Credentials)
+  passwordHash String?
+
+  // Relations
+  participants Participant[] @relation("UserParticipants")
+  messages     Message[]     @relation("UserMessages")
+  attachments  Attachment[]  @relation("UserAttachments")
+
+  // notifications where user is recipient
+  notifications      Notification[] @relation("RecipientNotifications")
+  // notifications where user is the actor (initiator)
+  actorNotifications Notification[] @relation("ActorNotifications")
+
+  // Friendships & requests
+  sentFriendships     Friendship[] @relation("FriendshipSender")
+  receivedFriendships Friendship[] @relation("FriendshipReceiver")
+
+  sentFriendRequests     FriendRequest[] @relation("FriendRequestSender")
+  receivedFriendRequests FriendRequest[] @relation("FriendRequestReceiver")
+
+  // Invites
+  sentInvites     Invite[] @relation("InviteSender")
+  receivedInvites Invite[] @relation("InviteReceiver")
+
+  // Blocks
+  blockedUsers BlockedUser[] @relation("Blocker")
+  blockedBy    BlockedUser[] @relation("Blocked")
+
+  // Typing indicators
+  typingIndicators TypingIndicator[] @relation("UserTyping")
+
+  // Threads created by user
+  threads Thread[] @relation("UserThreads")
+
+  // Logs
+  logs           Log[]            @relation("UserLogs")
+  MessageReceipt MessageReceipt[]
+}
+
+model Conversation {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title     String?
+  type      ConversationType @default(DM)
+  isPrivate Boolean          @default(true)
+
+  // Relations
+  participants Participant[] @relation("ConversationParticipants")
+  messages     Message[]     @relation("ConversationMessages")
+
+  // optional pointer to last message (not unique so it can be null or reused)
+  lastMessageId   String?           @unique
+  lastMessage     Message?          @relation("ConversationLastMessage", fields: [lastMessageId], references: [id])
+  Invite          Invite[]
+  TypingIndicator TypingIndicator[]
+}
+
+model Participant {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  role        ParticipantRole @default(MEMBER)
+  unreadCount Int             @default(0)
+  lastReadAt  DateTime?
+
+  userId         String
+  conversationId String
+
+  user         User         @relation("UserParticipants", fields: [userId], references: [id])
+  conversation Conversation @relation("ConversationParticipants", fields: [conversationId], references: [id])
+
+  // messages sent by this participant (via user relation)
+  // other relations are accessible via user or conversation
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  content String?
+  status  MessageStatus @default(SENT)
+
+  // sender
+  senderId String
+  sender   User   @relation("UserMessages", fields: [senderId], references: [id])
+
+  // conversation
+  conversationId String
+  conversation   Conversation @relation("ConversationMessages", fields: [conversationId], references: [id])
+
+  // reply / thread
+  replyToId String?
+  replyTo   Message?  @relation("MessageReplies", fields: [replyToId], references: [id])
+  replies   Message[] @relation("MessageReplies")
+
+  // optional thread association (thread is a separate model grouping messages)
+  threadId String?
+  thread   Thread? @relation("ThreadMessages", fields: [threadId], references: [id])
+
+  // attachments
+  attachments Attachment[] @relation("MessageAttachments")
+
+  // receipts per-user
+  receipts MessageReceipt[] @relation("MessageReceipts")
+
+  // conversation's lastMessage reverse relation (if set as conversation.lastMessage)
+  lastMessageFor Conversation? @relation("ConversationLastMessage")
+}
+
+model MessageReceipt {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  messageId String
+  message   Message @relation("MessageReceipts", fields: [messageId], references: [id])
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  delivered Boolean   @default(false)
+  read      Boolean   @default(false)
+  readAt    DateTime?
+}
+
+model Attachment {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  url       String
+  mimetype  String?
+  size      Int?
+
+  messageId String
+  message   Message @relation("MessageAttachments", fields: [messageId], references: [id])
+
+  uploadedBy String?
+  user       User?   @relation("UserAttachments", fields: [uploadedBy], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  type  String
+  title String?
+  body  String?
+  read  Boolean @default(false)
+
+  recipientId String
+  recipient   User   @relation("RecipientNotifications", fields: [recipientId], references: [id])
+
+  actorId String?
+  actor   User?   @relation("ActorNotifications", fields: [actorId], references: [id])
+
+  // optional linked models
+  conversationId String?
+  messageId      String?
+}
+
+model Friendship {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  senderId String
+  sender   User   @relation("FriendshipSender", fields: [senderId], references: [id])
+
+  receiverId String
+  receiver   User   @relation("FriendshipReceiver", fields: [receiverId], references: [id])
+
+  accepted Boolean @default(false)
+}
+
+model FriendRequest {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  senderId String
+  sender   User   @relation("FriendRequestSender", fields: [senderId], references: [id])
+
+  receiverId String
+  receiver   User   @relation("FriendRequestReceiver", fields: [receiverId], references: [id])
+
+  message  String?
+  accepted Boolean @default(false)
+}
+
+model Invite {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  code      String    @unique
+  expiresAt DateTime?
+  accepted  Boolean   @default(false)
+
+  senderId String
+  sender   User   @relation("InviteSender", fields: [senderId], references: [id])
+
+  receiverId String?
+  receiver   User?   @relation("InviteReceiver", fields: [receiverId], references: [id])
+
+  conversationId String?
+  conversation   Conversation? @relation(fields: [conversationId], references: [id])
+}
+
+model BlockedUser {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  blockerId String
+  blocker   User   @relation("Blocker", fields: [blockerId], references: [id])
+
+  blockedId String
+  blocked   User   @relation("Blocked", fields: [blockedId], references: [id])
+}
+
+model TypingIndicator {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation("UserTyping", fields: [userId], references: [id])
+
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+
+  isTyping Boolean @default(true)
+}
+
+model Thread {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  createdBy String
+  creator   User     @relation("UserThreads", fields: [createdBy], references: [id])
+
+  title    String?
+  messages Message[] @relation("ThreadMessages")
+}
+
+model Log {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  kind      String
+  data      Json?
+
+  userId String?
+  user   User?   @relation("UserLogs", fields: [userId], references: [id])
+}
