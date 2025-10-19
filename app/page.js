@@ -46,7 +46,7 @@ export default function Home() {
 
                     <div className="mt-8 flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
                         <Link
-                            href="/login"
+                            href="/signup"
                             className="inline-flex items-center justify-center px-8 py-4 bg-indigo-600 text-white rounded-lg text-lg font-semibold hover:bg-indigo-700 hover:shadow-lg transition-all duration-200"
                         >
                             Get Started
@@ -62,6 +62,11 @@ export default function Home() {
 
                 </div>
             </section>
+            <footer className="w-full bg-white border-t mt-20">
+                <div className="max-w-7xl mx-auto px-6 py-6 text-center text-sm text-gray-500">
+                    Made by <Link href="https://github.com/riissitsurana4" className="text-indigo-600 hover:underline">RS</Link>
+                </div>
+            </footer>
         </main>
     );
 }
