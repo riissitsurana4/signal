@@ -20,16 +20,18 @@ export const authOptions = {
                     where: { email: credentials.email },
                 });
 
-                if (!user || !user.password) {
+                if (!user || !user.passwordHash) {
+                    console.log('User not found or no password:', credentials.email);
                     return null;
                 }
 
-                const isValid = await bcrypt.compare(credentials.password, user.password);
-                
+                const isValid = await bcrypt.compare(credentials.password, user.passwordHash); 
                 if (!isValid) {
+                    console.log('Invalid password for:', credentials.email);
                     return null;
                 }
 
+                console.log('Login successful for:', credentials.email);
                 return {
                     id: user.id,
                     name: user.name,
