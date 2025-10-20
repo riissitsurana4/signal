@@ -10,12 +10,23 @@ export default function Dashboard() {
     const [newMessage, setNewMessage] = useState('')
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
+    const [showNewChatModal, setShowNewChatModal] = useState(false)
+    const [chatType, setChatType] = useState('DM')
+    const [chatTitle, setChatTitle] = useState('')
+    const [selectedUsers, setSelectedUsers] = useState([])
+    const [userList, setUserList] = useState([])
     const messagesEndRef = useRef(null)
     const pollIntervalRef = useRef(null)
 
     useEffect(() => {
+        console.log('Dashboard: Session status changed to', status);
         if (status === 'authenticated') {
-            fetchConversations()
+            console.log('Dashboard: Fetching conversations...');
+            fetchConversations();
+        } else if (status === 'unauthenticated') {
+            console.log('Dashboard: User not authenticated');
+            setError('Authentication failed. Please log in.');
+            setLoading(false);
         }
     }, [status])
 
@@ -31,6 +42,24 @@ export default function Dashboard() {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
     }, [messages])
 
+
+    useEffect(() => {
+        if (showNewChatModal) {
+            fetchUserList();
+        }
+    }, [showNewChatModal]);
+
+    useEffect(() => {
+        if (status === 'loading') {
+            const timeout = setTimeout(() => {
+                console.warn('Dashboard: Session loading timed out');
+                setError('Session loading timed out. Check your connection and refresh.');
+                setLoading(false);
+            }, 10000);
+            return () => clearTimeout(timeout);
+        }
+    }, [status]);
+
     const fetchConversations = async () => {
         try {
             const res = await fetch('/api/conversations')
@@ -44,6 +73,19 @@ export default function Dashboard() {
             setError('Network error')
         } finally {
             setLoading(false)
+        }
+    }
+    const fetchUserList = async () => {
+        try {
+            const res = await fetch('/api/users');
+            if (res.ok) {
+                const data = await res.json();
+                setUserList(data);
+            } else {
+                setError('Failed to load user list');
+            }
+        } catch (err) {
+            setError('Network error');
         }
     }
 
@@ -80,45 +122,73 @@ export default function Dashboard() {
         }
     }
 
+    const createNewChat = async () => {
+        if (!chatTitle.trim()) return;
+        try {
+            const participants = [session.user.id, ...selectedUsers];  // Includes current user
+            const res = await fetch('/api/conversations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: chatTitle,
+                    type: chatType,
+                    participants: participants
+                })
+            });
+
+            if (res.ok) {
+                setShowNewChatModal(false);
+                setChatTitle('');
+                setSelectedUsers([]);
+                fetchConversations();
+            } else {
+                console.error('Failed to create chat:', await res.text());
+            }
+        } catch (error) {
+            console.error('Failed to create new chat:', error);
+        }
+    }
+
     if (status === 'loading' || loading) {
         return (
-           
-                <main className="min-h-screen bg-gray-50 flex items-center justify-center">
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-                        <p className="mt-4 text-gray-600">Loading dashboard...</p>
-                    </div>
-                </main>
-            
+
+            <main className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Loading dashboard...</p>
+                </div>
+            </main>
+
         )
     }
 
 
     return (
-        
-            <main className="min-h-screen bg-gray-50 flex">
+
+        <main className="min-h-screen bg-gray-50 flex">
             <div className="w-1/4 bg-white border-r border-gray-200 p-4">
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-bold">Conversations</h2>
-                    <button
-                        onClick={() => signOut()}
-                        className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
-                    >
+                    <button onClick={() => setShowNewChatModal(true)} className="px-3 py-1 bg-indigo-600 text-white rounded text-sm hover:bg-indigo-700">
+                        New Chat
+                    </button>
+                    <button onClick={() => signOut({ callbackUrl: '/login' })}
+                        className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700">
                         Logout
                     </button>
                 </div>
                 {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
                 <ul className="space-y-2">
-                    {conversations.map((conv) => (
+                    {conversations.map((conversation) => (
                         <li
-                            key={conv.id}
-                            onClick={() => setSelectedConversation(conv)}
-                            className={`p-3 rounded cursor-pointer hover:bg-gray-100 ${selectedConversation?.id === conv.id ? 'bg-indigo-100' : ''
+                            key={conversation.id}
+                            onClick={() => setSelectedConversation(conversation)}
+                            className={`p-3 rounded cursor-pointer hover:bg-gray-100 ${selectedConversation?.id === conversation.id ? 'bg-indigo-100' : ''
                                 }`}
                         >
-                            <p className="font-medium">{conv.name || 'Unnamed Chat'}</p>
+                            <p className="font-medium">{conversation.title || 'Unnamed Chat'}</p>
                             <p className="text-sm text-gray-600 truncate">
-                                {conv.lastMessage?.content || 'No messages'}
+                                {conversation.lastMessage?.content || 'No messages'}
                             </p>
                         </li>
                     ))}
@@ -131,7 +201,7 @@ export default function Dashboard() {
                     <>
 
                         <div className="bg-white border-b border-gray-200 p-4">
-                            <h3 className="text-lg font-medium">{selectedConversation.name || 'Chat'}</h3>
+                            <h3 className="text-lg font-medium">{selectedConversation.title || 'Chat'}</h3>
                         </div>
 
 
@@ -183,7 +253,57 @@ export default function Dashboard() {
                     </div>
                 )}
             </div>
-            </main>
-        
+
+            {showNewChatModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                    <div className="bg-white p-6 rounded-lg w-96">
+                        <h3 className="text-lg font-medium mb-4">Create New Chat</h3>
+                        <select value={chatType} onChange={(e) => setChatType(e.target.value)} className="w-full mb-4 p-2 border border-gray-300 rounded">
+                            <option value="DM">Direct Message</option>
+                            <option value="GROUP">Group Chat</option>
+                        </select>
+                        <input type="text" value={chatTitle} onChange={(e) => setChatTitle(e.target.value)} placeholder="Chat Title" className="w-full mb-4 p-2 border border-gray-300 rounded" />
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium mb-2">Select {chatType === 'DM' ? 'User' : 'Users'}:</label>
+                            <div className="max-h-32 overflow-y-auto border border-gray-300 rounded p-2">
+                                {userList.map((user) => (
+                                    <label key={user.id} className="flex items-center space-x-2 mb-1">
+                                        <input
+                                            type={chatType === 'DM' ? 'radio' : 'checkbox'}
+                                            name="selectedUsers"
+                                            value={user.id}
+                                            checked={selectedUsers.includes(user.id)}
+                                            onChange={(e) => {
+                                                if (chatType === 'DM') {
+                                                    setSelectedUsers([e.target.value])
+                                                } else {
+                                                    setSelectedUsers(prev =>
+                                                        e.target.checked
+                                                            ? [...prev, e.target.value]
+                                                            : prev.filter(id => id !== e.target.value)
+                                                    )
+                                                }
+                                            }}
+                                            className="form-checkbox"
+                                        />
+                                        <span>{user.name || user.email}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="flex justify-end space-x-2">
+                            <button onClick={() => setShowNewChatModal(false)} className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">
+                                Cancel
+                            </button>
+                            <button onClick={createNewChat} className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+                                Create
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            )}
+        </main>
+
     )
 }

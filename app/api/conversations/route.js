@@ -28,3 +28,26 @@ export async function GET() {
     return Response.json({ error: 'Failed to fetch conversations' }, { status: 500 })
   }
 }
+
+export async function POST(req) {
+  const session = await getServerSession(authOptions)
+  if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { title, type, participants } = await req.json()
+
+  try {
+    const conversation = await prisma.conversation.create({
+      data: {
+        title,
+        type,
+        participants: {
+          create: participants.map((userId) => ({ userId }))
+        }
+      }
+    })
+    return Response.json(conversation, { status: 201 })
+  } catch (error) {
+    console.error('Error creating conversation:', error)
+    return Response.json({ error: 'Failed to create conversation' }, { status: 500 })
+  }
+}
