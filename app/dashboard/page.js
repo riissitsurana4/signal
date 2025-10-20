@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Send, Plus, Menu, Search, Trash2, Smile, Settings, Paperclip, ChevronDown } from 'lucide-react'
@@ -48,7 +48,7 @@ export default function Dashboard() {
         } else if (status === 'unauthenticated') {
             router.push('/login')
         }
-    }, [status])
+    }, [status, router, fetchConversations, fetchUserList])
 
     useEffect(() => {
         if (selectedConversation) {
@@ -56,7 +56,7 @@ export default function Dashboard() {
             pollIntervalRef.current = setInterval(fetchMessages, 5000)
         }
         return () => clearInterval(pollIntervalRef.current)
-    }, [selectedConversation])
+    }, [selectedConversation, fetchMessages])
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -68,7 +68,7 @@ export default function Dashboard() {
         }
     }, [showNewChatModal])
 
-    const fetchConversations = async () => {
+    const fetchConversations = useCallback(async () => {
         try {
             const res = await fetch('/api/conversations')
             if (res.ok) {
@@ -82,9 +82,9 @@ export default function Dashboard() {
         } finally {
             setLoading(false)
         }
-    }
+    }, [])
 
-    const fetchUserList = async () => {
+    const fetchUserList = useCallback(async () => {
         try {
             const res = await fetch('/api/users')
             if (res.ok) {
@@ -94,9 +94,9 @@ export default function Dashboard() {
         } catch (err) {
             console.error('Failed to fetch users')
         }
-    }
+    }, [])
 
-    const fetchMessages = async () => {
+    const fetchMessages = useCallback(async () => {
         if (!selectedConversation) return
         try {
             const res = await fetch(`/api/messages?conversationId=${selectedConversation.id}`)
@@ -109,7 +109,7 @@ export default function Dashboard() {
         } catch (err) {
             setError('Network error: Unable to load messages')
         }
-    }
+    }, [selectedConversation])
 
     const sendMessage = async () => {
         if (!newMessage.trim() || sending) return
