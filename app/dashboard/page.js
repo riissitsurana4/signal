@@ -9,6 +9,8 @@ import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import EmojiPicker from 'emoji-picker-react'
 import Link from 'next/link'
+import Image from 'next/image'
+
 
 export default function Dashboard() {
     const { data: session, status } = useSession()
@@ -203,7 +205,7 @@ export default function Dashboard() {
         <div className="flex flex-col h-screen bg-slate-50 font-sans">
             <header className="bg-white border-b border-gray-200 p-4 shadow-sm flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                    <img src={session?.user?.image || '/default-avatar.png'} alt="Profile" className="w-10 h-10 rounded-full border-2 border-indigo-200" />
+                    <Image src={session?.user?.image || '/default-avatar.png'} alt="Profile" className="w-10 h-10 rounded-full border-2 border-indigo-200" />
                     <h1 className="text-xl font-semibold text-gray-800">{session?.user?.name || 'Signal'}</h1>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -280,7 +282,7 @@ export default function Dashboard() {
                                         {msgs.map((message) => (
                                             <div key={message.id} className={`flex items-end space-x-3 mb-4 ${message.senderId === session.user.id ? 'justify-end' : 'justify-start'}`}>
                                                 {message.senderId !== session.user.id && (
-                                                    <img src={message.sender.image || '/default-avatar.png'} alt="Avatar" className="w-10 h-10 rounded-full border-2 border-white shadow-md" />
+                                                    <Image src={message.sender.image || '/default-avatar.png'} alt="Avatar" className="w-10 h-10 rounded-full border-2 border-white shadow-md" />
                                                 )}
                                                 <div className={`relative p-4 rounded-lg max-w-md shadow-lg ${message.senderId === session.user.id ? 'bg-indigo-600 text-white' : 'bg-white text-gray-900 border border-gray-200'}`}>
                                                     <p className="text-sm leading-relaxed">{message.content}</p>
@@ -292,7 +294,7 @@ export default function Dashboard() {
                                                     )}
                                                 </div>
                                                 {message.senderId === session.user.id && (
-                                                    <img src={session.user.image || '/default-avatar.png'} alt="Your Avatar" className="w-10 h-10 rounded-full border-2 border-white shadow-md" />
+                                                    <Image src={session.user.image || '/default-avatar.png'} alt="Your Avatar" className="w-10 h-10 rounded-full border-2 border-white shadow-md" />
                                                 )}
                                             </div>
                                         ))}
@@ -387,7 +389,7 @@ export default function Dashboard() {
                                             }}
                                             className="form-radio text-indigo-600 focus:ring-indigo-500"
                                         />
-                                        <img src={user.image || '/default-avatar.png'} alt="Avatar" className="w-8 h-8 rounded-full" />
+                                        <Image src={user.image || '/default-avatar.png'} alt="Avatar" className="w-8 h-8 rounded-full" />
                                         <span className="text-gray-800 font-medium">{user.name || user.email}</span>
                                     </label>
                                 ))}
