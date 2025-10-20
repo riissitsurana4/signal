@@ -59,3 +59,57 @@ export async function POST(request) {
         return Response.json({ error: 'Failed to send message' }, { status: 500 })
     }
 }
+
+export async function DELETE(request) {
+
+    const session = await getServerSession(authOptions);
+    if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const { searchParams } = new URL(request.url);
+    const messageId = searchParams.get('messageId');
+    if (!messageId) {
+        return Response.json({ error: 'messageId is required' }, { status: 400 });
+    }
+
+    try {
+        const message = await prisma.message.findUnique({
+            where: { id: messageId },
+            include: { conversation: { include: { participants: true } } }  // Include conversation for checks
+        });
+
+        if (!message) {
+            return Response.json({ error: 'Message not found' }, { status: 404 });
+        }
+        if (message.senderId !== session.user.id) {
+            return Response.json({ error: 'Forbidden: You can only delete your own messages' }, { status: 403 });
+        }
+        const isParticipant = message.conversation.participants.some(p => p.userId === session.user.id);
+        if (!isParticipant) {
+            return Response.json({ error: 'Forbidden: Not a participant in this conversation' }, { status: 403 });
+        }
+
+        await prisma.message.delete({
+            where: { id: messageId }
+        });
+        const lastMessage = await prisma.message.findFirst({
+            where: { conversationId: message.conversationId },
+            orderBy: { createdAt: 'desc' }
+        });
+        if (lastMessage) {
+            await prisma.conversation.update({
+                where: { id: message.conversationId },
+                data: { lastMessageId: lastMessage.id }
+            });
+        } else {
+            await prisma.conversation.update({
+                where: { id: message.conversationId },
+                data: { lastMessageId: null }
+            });
+        }
+
+        return Response.json({ success: true });
+    } catch (error) {
+        console.error('Error deleting message:', error);
+        return Response.json({ error: 'Failed to delete message' }, { status: 500 });
+    }
+}
