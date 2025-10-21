@@ -38,7 +38,6 @@ export default function Login() {
                 <h1 className="text-2xl font-bold mb-6 text-center">Welcome back to <span className='text-indigo-600'>Blip:Messenger</span></h1>
                 <h2 className="text-xl font-bold mb-2 text-center">Login to your account</h2>
                 <p className="mb-4">* Required fields</p>
-                <p>You can also use this for testing: <br /> Email: dummy@example.com <br /> Password: password</p>
                 {error && (
                     <div className="mb-4 p-3 text-red-600 rounded-md text-sm text-center">
                         {error}

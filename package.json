@@ -11,15 +11,13 @@
   "dependencies": {
     "@prisma/client": "^6.17.1",
     "bcryptjs": "^3.0.2",
-    "emoji-picker-react": "^4.14.2",
     "lucide-react": "^0.546.0",
     "next": "15.5.5",
     "next-auth": "^4.24.11",
     "prisma": "^6.17.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-hot-toast": "^2.6.0",
-    "react-loading-skeleton": "^3.5.0"
+    "react-hot-toast": "^2.6.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
