@@ -203,7 +203,7 @@ export default function Dashboard() {
         <div className="flex flex-col h-screen bg-slate-50 font-sans">
             <header className="bg-white border-b border-gray-200 p-4 shadow-sm flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                    <Image src={session?.user?.image || '/default-avatar.png'} alt="Profile" className="w-10 h-10 rounded-full border-2 border-indigo-200" />
+                    <Image src={session?.user?.image || '/default-avatar.png'} alt="Profile" width={40} height={40} className="w-10 h-10 rounded-full border-2 border-indigo-200" />
                     <h1 className="text-xl font-semibold text-gray-800">{session?.user?.name || 'Signal'}</h1>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -280,7 +280,7 @@ export default function Dashboard() {
                                         {msgs.map((message) => (
                                             <div key={message.id} className={`flex items-end space-x-3 mb-4 ${message.senderId === session.user.id ? 'justify-end' : 'justify-start'}`}>
                                                 {message.senderId !== session.user.id && (
-                                                    <Image src={message.sender.image || '/default-avatar.png'} alt="Avatar" className="w-10 h-10 rounded-full border-2 border-white shadow-md" />
+                                                    <Image src={message.sender.image || '/default-avatar.png'} alt="Avatar" width={40} height={40} className="w-10 h-10 rounded-full border-2 border-white shadow-md" />
                                                 )}
                                                 <div className={`relative p-4 rounded-lg max-w-md shadow-lg ${message.senderId === session.user.id ? 'bg-indigo-600 text-white' : 'bg-white text-gray-900 border border-gray-200'}`}>
                                                     <p className="text-sm leading-relaxed">{message.content}</p>
@@ -292,7 +292,7 @@ export default function Dashboard() {
                                                     )}
                                                 </div>
                                                 {message.senderId === session.user.id && (
-                                                    <Image src={session.user.image || '/default-avatar.png'} alt="Your Avatar" className="w-10 h-10 rounded-full border-2 border-white shadow-md" />
+                                                    <Image src={session.user.image || '/default-avatar.png'} alt="Your Avatar" width={40} height={40} className="w-10 h-10 rounded-full border-2 border-white shadow-md" />
                                                 )}
                                             </div>
                                         ))}
@@ -351,7 +351,7 @@ export default function Dashboard() {
             {showNewChatModal && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
                     <div className="bg-white p-8 rounded-lg w-96 max-h-96 overflow-y-auto shadow-2xl border border-gray-200">
-                        <h3 className="text-2xl font-bold mb-6 text-gray-800 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Start New Chat</h3>
+                        <h3 className="text-2xl font-bold mb-6 text-gray-800">Start New Chat</h3>
                         <select value={chatType} onChange={(e) => { setChatType(e.target.value); setSelectedUsers([]) }} className="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
                             <option value="DM">Direct Message</option>
                             <option value="GROUP">Group Chat</option>
@@ -380,7 +380,7 @@ export default function Dashboard() {
                                             }}
                                             className="form-radio text-indigo-600 focus:ring-indigo-500"
                                         />
-                                        <Image src={user.image || '/default-avatar.png'} alt="Avatar" className="w-8 h-8 rounded-full" />
+                                        <Image src={user.image || '/default-avatar.png'} alt="Avatar" width={32} height={32} className="w-8 h-8 rounded-full" />
                                         <span className="text-gray-800 font-medium">{user.name || user.email}</span>
                                     </label>
                                 ))}
