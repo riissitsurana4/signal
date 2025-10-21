@@ -7,7 +7,6 @@ import { Send, Plus, Menu, Search, Trash2, Smile, Settings, Paperclip, ChevronDo
 import toast, { Toaster } from 'react-hot-toast'
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
-import EmojiPicker from 'emoji-picker-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -29,7 +28,6 @@ export default function Dashboard() {
     const [messageSearch, setMessageSearch] = useState('')
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const [sending, setSending] = useState(false)
-    const [showEmojiPicker, setShowEmojiPicker] = useState(false)
     const [isAtBottom, setIsAtBottom] = useState(true)
     const messagesEndRef = useRef(null)
     const pollIntervalRef = useRef(null)
@@ -313,15 +311,8 @@ export default function Dashboard() {
                         )}
                     
                         <div className="bg-white border-t border-gray-200 p-6 rounded-l-lg relative">
-                            {showEmojiPicker && (
-                                <div className="absolute bottom-full mb-2 right-0">
-                                    <EmojiPicker onEmojiClick={(emoji) => { setNewMessage(newMessage + emoji.emoji); setShowEmojiPicker(false) }} />
-                                </div>
-                            )}
+                        
                             <div className="flex items-center space-x-3">
-                                <button onClick={() => setShowEmojiPicker(!showEmojiPicker)} className="p-3 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200">
-                                    <Smile size={20} />
-                                </button>
                                 <input
                                     type="text"
                                     value={newMessage}
