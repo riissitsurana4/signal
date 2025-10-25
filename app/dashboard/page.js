@@ -225,7 +225,7 @@ export default function Dashboard() {
         
             <div className={`w-full md:w-1/4 bg-white border-r border-gray-200 p-6 shadow-xl ${sidebarOpen ? 'block' : 'hidden'} md:block fixed md:relative z-40 h-full mt-16 md:mt-0`}>
                 <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold text-gray-800 bg-indigo-600 bg-clip-text text-transparent">Chats</h2>
+                    <h2 className="text-xl font-bold text-gray-800 bg-indigo-600 bg-clip-text">Chats</h2>
                 </div>
                 {loading ? (
                     <div className="space-y-3">
