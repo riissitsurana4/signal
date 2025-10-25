@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import FallingLeaves from '../components/FallingLeaves';
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -33,12 +34,13 @@ export default function Login() {
         }
     }
     return (
-        <main className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
+        <main className="min-h-screen flex items-center justify-center bg-primary p-6">
+            <FallingLeaves />
             <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
-                <h1 className="text-2xl font-bold mb-6 text-center">Welcome back to <span className='text-indigo-600'>Blip:Messenger</span></h1>
-                <h2 className="text-xl font-bold mb-2 text-center">Login to your account</h2>
-                <p className="mb-4">* Required fields</p>
-                <p>For demo use: <br /> Email: dummy@example.com <br /> Password: password</p>
+                <h1 className="text-2xl text-accent-soft font-bold mb-6 text-center">Welcome back to <span className='text-accent'>Blip:Messenger</span></h1>
+                <h2 className="text-xl text-primary font-bold mb-2 text-center">Login to your account</h2>
+                <p className="mb-4 text-primary">* Required fields</p>
+                <p className="text-primary">For demo use: <br /> Email: dummy@example.com <br /> Password: password</p>
                 {error && (
                     <div className="mb-4 p-3 text-red-600 rounded-md text-sm text-center">
                         {error}
@@ -74,7 +76,7 @@ export default function Login() {
                             {showPassword ? "Hide" : "Show"}
                         </button>
                     </div>
-                    <button type="submit" disabled={loading} className="w-full px-6 py-3 bg-indigo-600 text-white rounded-md font-medium hover:bg-indigo-700 transition disabled:opacity-50">
+                    <button type="submit" disabled={loading} className="w-full px-6 py-3 bg-button text-button rounded-md font-medium disabled:opacity-50">
                         {loading ? 'Logging in...' : 'Log in'}
                     </button>
                 </form>

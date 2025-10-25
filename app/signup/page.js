@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import FallingLeaves from '../components/FallingLeaves';
 
 export default function Signup() {
     const [name, setName] = useState("");
@@ -50,11 +51,12 @@ export default function Signup() {
     };
 
     return (
-        <main className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
+        <main className="min-h-screen flex items-center justify-center bg-primary p-6">
+            <FallingLeaves />
             <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
-                <h1 className="text-2xl font-bold mb-6 text-center">Welcome to <span className='text-indigo-600'>Blip:Messenger</span></h1>
-                <h2 className="text-xl font-bold mb-2 text-center">Create Account</h2>
-                <p className="mb-4">* Required fields</p>
+                <h1 className="text-2xl text-accent-soft font-bold mb-6 text-center">Welcome back to <span className='text-accent'>Blip:Messenger</span></h1>
+                <h2 className="text-xl text-primary font-bold mb-2 text-center">Create Account</h2>
+                <p className="mb-4 text-primary">* Required fields</p>
 
                 {error && (
                     <div className="mb-4 p-3 text-red-600 rounded-md text-sm text-center">
@@ -124,7 +126,7 @@ export default function Signup() {
 
 
 
-                    <button type="submit" disabled={loading} className="w-full px-6 py-3 bg-indigo-600 text-white rounded-md font-medium hover:bg-indigo-700 transition disabled:opacity-50">
+                    <button type="submit" disabled={loading} className="w-full px-6 py-3 bg-button text-button rounded-md font-medium disabled:opacity-50">
                         {loading ? 'Creating account...' : 'Create Account'}
                     </button>
                 </form>

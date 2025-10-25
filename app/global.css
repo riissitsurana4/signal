@@ -30,7 +30,7 @@ html.dark {
 
 html.fall {
     --background: #fff4b0;
-    --foreground: #2f1b0c;
+    --foreground: #41230c;
     --accent: #d97706;
     --accent-soft: #f5b041;
     --chat-bg: #fef9c3;
@@ -83,7 +83,9 @@ html.fall ::-webkit-scrollbar-track {
     .text-accent {
         color: var(--accent);
     }
-
+    .text-accent-soft {
+        color: var(--accent-soft);
+    }
     .bg-button {
         background-color: var(--button-bg);
     }
