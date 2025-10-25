@@ -1,18 +1,102 @@
 @import "tailwindcss";
 
 :root {
-    --background: #ffffff;
-    --foreground: #171717;
+    --background: #fffdf5;
+    --foreground: #1a1a1a;
+    --accent: #2563eb;
+    --accent-soft: #93c5fd;
+    --chat-bg: #f4f4f5;
+    --chat-own: #2563eb;
+    --border: #e5e7eb;
+    --button-bg: #4F46E5;
+    --button-text: #ffffff;
+    --input-bg: #F3F4F6;
+    --input-border: #D1D5DB;
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+html.dark {
+    --background: #0f172a;
+    --foreground: #f8fafc;
+    --accent: #60a5fa;
+    --accent-soft: #1e293b;
+    --chat-bg: #1e293b;
+    --chat-own: #3b82f6;
+    --border: #334155;
+    --button-bg: #6366f1;
+    --button-text: #ffffff;
+    --input-bg: #374151;
+    --input-border: #6b7280;
+}
 
-body {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: 'Inter', sans-serif;
-  margin: 0;
-  padding: 0;
+html.fall {
+    --background: #fff4b0;
+    --foreground: #2f1b0c;
+    --accent: #d97706;
+    --accent-soft: #f5b041;
+    --chat-bg: #fef9c3;
+    --chat-own: #f59e0b;
+    --border: #fcd34d;
+    --button-bg: #ea580c;
+    --button-text: #ffffff;
+    --input-bg: #fed7aa;
+    --input-border: #fdba74;
+}
+
+html.fall ::-webkit-scrollbar {
+    width: 8px;
+}
+
+html.fall ::-webkit-scrollbar-thumb {
+    background-color: var(--accent);
+    border-radius: 10px;
+}
+
+html.fall ::-webkit-scrollbar-track {
+    background: var(--chat-bg);
+}
+
+@layer base {
+
+    html,
+    body {
+        background-color: var(--background);
+        color: var(--foreground);
+        font-family: 'Inter', sans-serif;
+        margin: 0;
+        padding: 0;
+        transition: background-color 0.4s ease, color 0.4s ease;
+    }
+
+    /* Add default Tailwind classes using variables */
+    .bg-primary {
+        background-color: var(--background);
+    }
+
+    .text-primary {
+        color: var(--foreground);
+    }
+
+    .bg-accent {
+        background-color: var(--accent);
+    }
+
+    .text-accent {
+        color: var(--accent);
+    }
+
+    .bg-button {
+        background-color: var(--button-bg);
+    }
+
+    .text-button {
+        color: var(--button-text);
+    }
+
+    .bg-input {
+        background-color: var(--input-bg);
+    }
+
+    .border-input {
+        border-color: var(--input-border);
+    }
 }

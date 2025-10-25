@@ -1,19 +1,16 @@
-'use client'
 import "./global.css";
-import { SessionProvider } from "next-auth/react";
-{/*export const metadata = {
+import Provider from "./components/provider";
+export const metadata = {
     title: "Blip:Messenger",
     description: "Messenger App",
-};*/}
+};
 
 export default function RootLayout({ children }) {
     return (
-        <SessionProvider>
-        <html lang="en">
-            <body>
-                {children}
-            </body>
+        <html lang="en" suppressHydrationWarning>
+        <body>
+        <Provider>{children}</Provider>
+        </body>
         </html>
-        </SessionProvider>
     );
 }
