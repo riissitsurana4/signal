@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useTheme } from 'next-themes';
 
 export default function FallingLeaves() {
+  const { theme } = useTheme();
   const [leaves, setLeaves] = useState([]);
 
   useEffect(() => {
@@ -22,7 +24,7 @@ export default function FallingLeaves() {
 
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-      {leaves.map((leaf) => (
+      {theme === 'fall' && leaves.map((leaf) => (
         <div
           key={leaf.id}
           className="absolute animate-fall text-5xl" // Even bigger leaves

@@ -97,7 +97,7 @@ export default function ChatRoomSVG({ className = 'w-full h-auto' }) {
             const y = displayIndex * 90 // vertical spacing between messages
             const translateX = m.side === 'out' ? 140 : 0
             const width = m.side === 'out' ? 210 : 240
-            const fill = m.side === 'out' ? '#4F46E5' : '#F3F4F6'
+            const fill = m.side === 'out' ? 'var(--accent)' : '#F3F4F6'
             const textFill = m.side === 'out' ? '#C7B9FF' : '#E6E7EB'
 
             return (

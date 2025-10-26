@@ -1,9 +1,11 @@
 import Link from 'next/link';
 import { Mail, Github } from 'lucide-react';
+import FallingLeaves from '../components/FallingLeaves';
 
 export default function Contact() {
     return (
         <main className="min-h-screen flex items-center justify-center bg-primary text-primary">
+            <FallingLeaves />
             <div className="min-h-screen flex items-center justify-center p-4">
                 <div className="bg-primary p-8 rounded-lg shadow-lg w-full max-w-md text-center">
                     <h1 className="text-2xl font-bold mb-4">Contact Us</h1>
