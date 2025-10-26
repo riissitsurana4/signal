@@ -35,6 +35,9 @@ model User {
   // store hashed password (NextAuth Credentials)
   passwordHash String?
 
+  emailVerified DateTime?  // For NextAuth email verification
+  resetToken    String?    // For password reset tokens
+
   // Relations
   participants Participant[] @relation("UserParticipants")
   messages     Message[]     @relation("UserMessages")
