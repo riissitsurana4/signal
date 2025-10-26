@@ -101,4 +101,10 @@ html.fall ::-webkit-scrollbar-track {
     .border-input {
         border-color: var(--input-border);
     }
+    .border-accent {
+        border-color: var(--accent);
+    }
+    .border-accent-soft {
+        border-color: var(--accent-soft);
+    }
 }
