@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import prisma from '@/lib/prisma';
+import { sendEmail } from '@/lib/email';
 
 export async function POST(request) {
     try {
@@ -21,7 +22,7 @@ export async function POST(request) {
                 passwordHash: passwordHash
             },
         });
-
+        await sendEmail(email, 'Welcome to Blip:Messenger', `<p>Hi ${name}, welcome to Blip:Messenger!<br>Start chatting with your friends today.</p>`);
         return new Response(JSON.stringify({ message: 'User created successfully' }), { status: 201 });
 
     } catch (error) {
