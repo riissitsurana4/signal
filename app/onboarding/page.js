@@ -27,7 +27,7 @@ export default function Onboarding() {
             <FallingLeaves />
             <div className="w-full max-w-4xl bg-white rounded-xl shadow-lg p-8 text-center">
                 <h1 className="text-3xl font-bold mb-4 text-accent-soft">Welcome to Blip:Messenger, {session?.user?.name}!</h1>
-                <p className="text-primary text-xl mb-8">We're glad to have you on board. Let's get started!</p>
+                <p className="text-primary text-xl mb-8">We are glad to have you on board. Let&apos;s get started!</p>
 
                 <div className="bg-gray-50 p-6 rounded-lg mb-8">
                     <h2 className="text-2xl font-bold mb-4 text-accent-soft">Next Steps</h2>
